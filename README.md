@@ -1,3 +1,18 @@
+# Fork of llvm/llvm-project for the *juice* programming language
+
+This is the fork of `llvm/llvm-project` containing all the changes needed by the
+*juice* compiler.
+
+The most important branch is named `juice/main`. It is used for the building of
+the compiler.  
+Next to it there is also the branch named `main`. It corresponds directly to the
+`main` branch of the upstream `llvm/llvm-project`, which is automatically merged
+in weekly.  
+Whenever it is needed, `main` is merged into `juice/main`, keeping it
+up-to-date.
+
+What follows is the LLVM project's main README.
+
 # The LLVM Compiler Infrastructure
 
 This directory and its sub-directories contain source code for LLVM,
