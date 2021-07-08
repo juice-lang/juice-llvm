@@ -1,3 +1,5 @@
+<img src="https://juicelang.org/logo" alt="juice logo" height="70">
+
 # Fork of llvm/llvm-project for the *juice* programming language
 
 This is the fork of `llvm/llvm-project` containing all the changes needed by the
