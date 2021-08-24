@@ -1,6 +1,9 @@
 name: Merge upstream branches
 
 on:
+  push:
+    paths:
+      - '.github/workflows/merge-upstream.yml'
   schedule:
     - cron: '0 0 * * 0'
 jobs:
@@ -15,8 +18,8 @@ jobs:
           git config user.email github-actions@github.com
 
           git remote add upstream https://github.com/llvm/llvm-project.git
-          git fetch upstream
+          git fetch --tags upstream
 
           git checkout --track origin/main
           git merge --no-edit upstream/main
-          git push origin main
+          git push --tags origin main
