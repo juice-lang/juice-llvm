@@ -8209,6 +8209,25 @@ TEST_F(FormatTest, ReturnTypeBreakingStyle) {
                "}\n",
                Style);
 
+  Style.BreakBeforeBraces = FormatStyle::BS_Custom;
+  Style.BraceWrapping.AfterFunction = true;
+  verifyFormat("int f(i);\n" // No break here.
+               "int\n"       // Break here.
+               "f(i)\n"
+               "{\n"
+               "  return i + 1;\n"
+               "}",
+               Style);
+  verifyFormat("int f(a, b, c);\n" // No break here.
+               "int\n"             // Break here.
+               "f(a, b, c)\n"      // Break here.
+               "short a, b;\n"
+               "float c;\n"
+               "{\n"
+               "  return a + b < c;\n"
+               "}",
+               Style);
+
   Style = getGNUStyle();
 
   // Test for comments at the end of function declarations.
@@ -9413,7 +9432,7 @@ TEST_F(FormatTest, UnderstandsUsesOfStarAndAmp) {
   verifyFormat("vector<A(uint64_t) * attr> v;", TypeMacros); // multiplication
 
   FormatStyle CustomQualifier = getLLVMStyle();
-  // Add indentifers that should not be parsed as a qualifier by default.
+  // Add identifiers that should not be parsed as a qualifier by default.
   CustomQualifier.AttributeMacros.push_back("__my_qualifier");
   CustomQualifier.AttributeMacros.push_back("_My_qualifier");
   CustomQualifier.AttributeMacros.push_back("my_other_qualifier");
@@ -16389,6 +16408,37 @@ TEST_F(FormatTest, AlignWithLineBreaks) {
                "                                                  std::forward_as_tuple(id, uniqueId, name, threadCreation));\n"
                "  const X    newEntry2      = Entries.emplaceHint(std::piecewise_construct, std::forward_as_tuple(uniqueId),\n"
                "                                                  std::forward_as_tuple(id, uniqueId, name, threadCreation));\n"
+               "}",
+               Style);
+  // clang-format on
+
+  Style = getLLVMStyleWithColumns(120);
+  Style.AlignConsecutiveAssignments = FormatStyle::ACS_Consecutive;
+  Style.ContinuationIndentWidth = 4;
+  Style.IndentWidth = 4;
+
+  // clang-format off
+  verifyFormat("void SomeFunc() {\n"
+               "    newWatcher.maxAgeUsec = ToLegacyTimestamp(GetMaxAge(FromLegacyTimestamp<milliseconds>(monitorFrequencyUsec),\n"
+               "                                                        seconds(std::uint64_t(maxSampleAge)), maxKeepSamples));\n"
+               "    newWatcher.maxAge     = ToLegacyTimestamp(GetMaxAge(FromLegacyTimestamp<milliseconds>(monitorFrequencyUsec),\n"
+               "                                                        seconds(std::uint64_t(maxSampleAge)), maxKeepSamples));\n"
+               "    newWatcher.max        = ToLegacyTimestamp(GetMaxAge(FromLegacyTimestamp<milliseconds>(monitorFrequencyUsec),\n"
+               "                                                        seconds(std::uint64_t(maxSampleAge)), maxKeepSamples));\n"
+               "}",
+               Style);
+  // clang-format on
+
+  Style.BinPackArguments = false;
+
+  // clang-format off
+  verifyFormat("void SomeFunc() {\n"
+               "    newWatcher.maxAgeUsec = ToLegacyTimestamp(GetMaxAge(\n"
+               "        FromLegacyTimestamp<milliseconds>(monitorFrequencyUsec), seconds(std::uint64_t(maxSampleAge)), maxKeepSamples));\n"
+               "    newWatcher.maxAge     = ToLegacyTimestamp(GetMaxAge(\n"
+               "        FromLegacyTimestamp<milliseconds>(monitorFrequencyUsec), seconds(std::uint64_t(maxSampleAge)), maxKeepSamples));\n"
+               "    newWatcher.max        = ToLegacyTimestamp(GetMaxAge(\n"
+               "        FromLegacyTimestamp<milliseconds>(monitorFrequencyUsec), seconds(std::uint64_t(maxSampleAge)), maxKeepSamples));\n"
                "}",
                Style);
   // clang-format on

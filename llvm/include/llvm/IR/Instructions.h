@@ -956,13 +956,9 @@ public:
                                    const Twine &NameStr = "",
                                    Instruction *InsertBefore = nullptr) {
     unsigned Values = 1 + unsigned(IdxList.size());
-    if (!PointeeType) {
-      PointeeType =
-          cast<PointerType>(Ptr->getType()->getScalarType())->getElementType();
-    } else {
-      assert(cast<PointerType>(Ptr->getType()->getScalarType())
-                 ->isOpaqueOrPointeeTypeMatches(PointeeType));
-    }
+    assert(PointeeType && "Must specify element type");
+    assert(cast<PointerType>(Ptr->getType()->getScalarType())
+               ->isOpaqueOrPointeeTypeMatches(PointeeType));
     return new (Values) GetElementPtrInst(PointeeType, Ptr, IdxList, Values,
                                           NameStr, InsertBefore);
   }
@@ -972,13 +968,9 @@ public:
                                    const Twine &NameStr,
                                    BasicBlock *InsertAtEnd) {
     unsigned Values = 1 + unsigned(IdxList.size());
-    if (!PointeeType) {
-      PointeeType =
-          cast<PointerType>(Ptr->getType()->getScalarType())->getElementType();
-    } else {
-      assert(cast<PointerType>(Ptr->getType()->getScalarType())
-                 ->isOpaqueOrPointeeTypeMatches(PointeeType));
-    }
+    assert(PointeeType && "Must specify element type");
+    assert(cast<PointerType>(Ptr->getType()->getScalarType())
+               ->isOpaqueOrPointeeTypeMatches(PointeeType));
     return new (Values) GetElementPtrInst(PointeeType, Ptr, IdxList, Values,
                                           NameStr, InsertAtEnd);
   }
@@ -987,8 +979,9 @@ public:
         Value *Ptr, ArrayRef<Value *> IdxList, const Twine &NameStr = "",
         Instruction *InsertBefore = nullptr),
       "Use the version with explicit element type instead") {
-    return CreateInBounds(Ptr->getType()->getPointerElementType(), Ptr, IdxList,
-                          NameStr, InsertBefore);
+    return CreateInBounds(
+        Ptr->getType()->getScalarType()->getPointerElementType(), Ptr, IdxList,
+        NameStr, InsertBefore);
   }
 
   /// Create an "inbounds" getelementptr. See the documentation for the
@@ -1007,8 +1000,9 @@ public:
         Value *Ptr, ArrayRef<Value *> IdxList, const Twine &NameStr,
         BasicBlock *InsertAtEnd),
       "Use the version with explicit element type instead") {
-    return CreateInBounds(Ptr->getType()->getPointerElementType(), Ptr, IdxList,
-                          NameStr, InsertAtEnd);
+    return CreateInBounds(
+        Ptr->getType()->getScalarType()->getPointerElementType(), Ptr, IdxList,
+        NameStr, InsertAtEnd);
   }
 
   static GetElementPtrInst *CreateInBounds(Type *PointeeType, Value *Ptr,
